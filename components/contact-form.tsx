@@ -1,481 +1,71 @@
 "use client"
 
-import type React from "react"
-import { useState, useEffect } from "react"
-import emailjs from "@emailjs/browser"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent } from "@/components/ui/card"
-import { CalendarIcon, MapPin, Phone, Mail } from "lucide-react"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { Calendar } from "@/components/ui/calendar"
-import { format } from "date-fns"
+import { MapPin, Phone, Mail } from "lucide-react"
 
-export default function ContactForm() {
-  const [selectedCar, setSelectedCar] = useState(null)
-  const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined)
-  const [formData, setFormData] = useState({
-    fullName: "",
-    email: "",
-    phone: "",
-    message: "",
-    selectedVehicle: "",
-    tripDate: "",
-    tripTime: "",
-    pickupLocation: "",
-    destination: "",
-  })
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [submitStatus, setSubmitStatus] = useState<"idle" | "success" | "error">("idle")
-  const [errors, setErrors] = useState<Record<string, string>>({})
-
-  useEffect(() => {
-    // Initialize EmailJS
-    const publicKey = process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY
-    if (!publicKey) {
-      console.warn(
-        "[v0] EmailJS Public Key not set. Please add NEXT_PUBLIC_EMAILJS_PUBLIC_KEY to your environment variables."
-      )
-      return
-    }
-    emailjs.init(publicKey)
-  }, [])
-
-  useEffect(() => {
-    if (typeof window === "undefined") return
-
-    const params = new URLSearchParams(window.location.search)
-    const carParam = params.get("car")
-
-    if (carParam) {
-      try {
-        const decodedCar = JSON.parse(decodeURIComponent(carParam))
-        setSelectedCar(decodedCar)
-        setFormData((prev) => ({
-          ...prev,
-          selectedVehicle: `${decodedCar.name} (${decodedCar.year}) - ${decodedCar.price}`,
-        }))
-      } catch (error) {
-        console.error("Error parsing car data:", error)
-      }
-    }
-  }, [])
-
-  const validateForm = () => {
-    const newErrors: Record<string, string> = {}
-
-    if (!formData.fullName.trim()) {
-      newErrors.fullName = "Full name is required"
-    }
-
-    if (!formData.email.trim()) {
-      newErrors.email = "Email is required"
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      newErrors.email = "Please enter a valid email address"
-    }
-
-    if (!formData.phone.trim()) {
-      newErrors.phone = "Phone number is required"
-    } else if (!/^\+?[\d\s\-()]+$/.test(formData.phone)) {
-      newErrors.phone = "Please enter a valid phone number"
-    }
-
-    if (!formData.message.trim()) {
-      newErrors.message = "Message is required"
-    }
-
-    if (selectedCar && !formData.tripDate) {
-      newErrors.tripDate = "Ride date is required for ride bookings"
-    }
-
-    if (selectedCar && !formData.tripTime) {
-      newErrors.tripTime = "Pickup time is required for ride bookings"
-    }
-
-    if (selectedCar && !formData.pickupLocation.trim()) {
-      newErrors.pickupLocation = "Pickup location is required for ride bookings"
-    }
-
-    if (selectedCar && !formData.destination.trim()) {
-      newErrors.destination = "Destination is required for ride bookings"
-    }
-
-    setErrors(newErrors)
-    return Object.keys(newErrors).length === 0
-  }
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-
-    if (!validateForm()) {
-      return
-    }
-
-    setIsSubmitting(true)
-    setSubmitStatus("idle")
-
-    try {
-      const serviceId = process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID
-      const templateId = process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID
-
-      console.log("[v0] EmailJS Config:", {
-        serviceId,
-        templateId,
-        hasServiceId: !!serviceId,
-        hasTemplateId: !!templateId,
-      })
-
-      if (!serviceId || !templateId) {
-        console.error("[v0] Missing EmailJS configuration:", {
-          hasServiceId: !!serviceId,
-          hasTemplateId: !!templateId,
-        })
-        throw new Error("EmailJS configuration is incomplete. Check your environment variables.")
-      }
-
-      // Send booking details to your email
-      const templateParams = {
-        name: formData.fullName,
-        user_name: formData.fullName.split(" ")[0],
-        user_email: formData.email,
-        email: formData.email,
-        phone: formData.phone,
-        selected_vehicle: formData.selectedVehicle || "Not specified",
-        trip_date: formData.tripDate || "Not specified",
-        trip_time: formData.tripTime || "Not specified",
-        pickup_location: formData.pickupLocation || "Not specified",
-        destination: formData.destination || "Not specified",
-        message: formData.message,
-      }
-
-      await emailjs.send(serviceId, templateId, templateParams)
-
-      setSubmitStatus("success")
-      setFormData({
-        fullName: "",
-        email: "",
-        phone: "",
-        message: "",
-        selectedVehicle: "",
-        tripDate: "",
-        tripTime: "",
-        pickupLocation: "",
-        destination: "",
-      })
-
-      setTimeout(() => setSubmitStatus("idle"), 5000)
-    } catch (error) {
-      console.error("Error sending email:", error)
-      setSubmitStatus("error")
-    } finally {
-      setIsSubmitting(false)
-    }
-  }
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target
-    setFormData((prev) => ({ ...prev, [name]: value }))
-    if (errors[name]) {
-      setErrors((prev) => ({ ...prev, [name]: "" }))
-    }
-  }
-
-  const handleDateSelect = (date: Date | undefined) => {
-    setSelectedDate(date)
-    if (date) {
-      setFormData((prev) => ({
-        ...prev,
-        tripDate: format(date, "yyyy-MM-dd"),
-      }))
-      if (errors.tripDate) {
-        setErrors((prev) => ({ ...prev, tripDate: "" }))
-      }
-    }
-  }
-
-  const handleTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { value } = e.target
-    setFormData((prev) => ({
-      ...prev,
-      tripTime: value,
-    }))
-    if (errors.tripTime) {
-      setErrors((prev) => ({ ...prev, tripTime: "" }))
-    }
-  }
-
+export default function Contact() {
   return (
-    <main className="min-h-screen bg-background pt-24">
-      <div className="container mx-auto px-4 lg:px-8 py-24">
-        <div className="text-center mb-16 animate-in fade-in slide-in-from-bottom-4 duration-700">
-          <h1 className="text-5xl md:text-6xl font-bold mb-6 text-balance">
-            {selectedCar ? "Book Your Ride" : "Get In"}{" "}
-            <span className="text-primary">{selectedCar ? "" : "Touch"}</span>
+    <main className="min-h-screen bg-background flex items-center justify-center px-4">
+      <div className="max-w-xl w-full text-center space-y-10">
+        {/* Heading */}
+        <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
+          <h1 className="text-5xl md:text-6xl font-bold mb-4">
+            Get In <span className="text-primary">Touch</span>
           </h1>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto text-pretty leading-relaxed">
-            {selectedCar
-              ? `Complete your booking for the ${selectedCar.name}. Provide your pickup and destination details below.`
-              : "Ready to book a luxury ride? Contact us today and let our team help you reserve your perfect vehicle."}
+          <p className="text-lg text-muted-foreground">
+            Reach out to us anytime. We’re always happy to help.
           </p>
         </div>
 
-        <div className="grid lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
-          {/* Contact Information */}
-          <div className="space-y-6">
-            <div className="animate-in fade-in slide-in-from-left duration-700 delay-100">
-              <Card className="bg-card hover:shadow-lg transition-all duration-500">
-                <CardContent className="p-6">
-                  <div className="flex items-start gap-4">
-                    <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
-                      <MapPin className="w-6 h-6 text-primary" />
-                    </div>
-                    <div>
-                      <h3 className="font-semibold mb-2">Visit Us</h3>
-                      <p className="text-sm text-muted-foreground leading-relaxed">
-                        123 Luxury Drive
-                        <br />
-                        Beverly Hills, CA 90210
-                      </p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
+        {/* Contact Cards */}
+        <div className="space-y-6">
+          {/* Address */}
+          <Card className="animate-in fade-in slide-in-from-bottom duration-700 delay-100">
+            <CardContent className="p-6 flex items-start gap-4">
+              <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
+                <MapPin className="w-6 h-6 text-primary" />
+              </div>
+              <div className="text-left">
+                <h3 className="font-semibold mb-1">Visit Us</h3>
+                <p className="text-sm text-muted-foreground">
+                  123 Luxury Drive <br />
+                  Beverly Hills, CA 90210
+                </p>
+              </div>
+            </CardContent>
+          </Card>
 
-            <div className="animate-in fade-in slide-in-from-left duration-700 delay-200">
-              <Card className="bg-card hover:shadow-lg transition-all duration-500">
-                <CardContent className="p-6">
-                  <div className="flex items-start gap-4">
-                    <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
-                      <Phone className="w-6 h-6 text-primary" />
-                    </div>
-                    <div>
-                      <h3 className="font-semibold mb-2">Call Us</h3>
-                      <p className="text-sm text-muted-foreground leading-relaxed">
-                        +1 (310) 555-0199
-                        <br />
-                        Mon-Sat: 9AM - 7PM
-                      </p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
+          {/* Phone */}
+          <Card className="animate-in fade-in slide-in-from-bottom duration-700 delay-200">
+            <CardContent className="p-6 flex items-start gap-4">
+              <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
+                <Phone className="w-6 h-6 text-primary" />
+              </div>
+              <div className="text-left">
+                <h3 className="font-semibold mb-1">Call Us</h3>
+                <p className="text-sm text-muted-foreground">
+                  +1 (310) 555-0199 <br />
+                  Mon–Sat: 9AM – 7PM
+                </p>
+              </div>
+            </CardContent>
+          </Card>
 
-            <div className="animate-in fade-in slide-in-from-left duration-700 delay-300">
-              <Card className="bg-card hover:shadow-xl transition-all duration-500">
-                <CardContent className="p-6">
-                  <div className="flex items-start gap-4">
-                    <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
-                      <Mail className="w-6 h-6 text-primary" />
-                    </div>
-                    <div>
-                      <h3 className="font-semibold mb-2">Email Us</h3>
-                      <p className="text-sm text-muted-foreground leading-relaxed break-all">
-                        info@esssliomllc.com
-                        <br />
-                        sales@esssliomllc.com
-                      </p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          </div>
-
-          {/* Contact Form */}
-          <div className="lg:col-span-2 animate-in fade-in slide-in-from-right duration-700 delay-100">
-            <Card className="bg-card hover:shadow-xl transition-all duration-500">
-              <CardContent className="p-8">
-                {selectedCar && (
-                  <div className="mb-6 p-4 bg-primary/10 border border-primary/20 rounded-lg animate-in fade-in duration-500">
-                    <p className="text-sm text-muted-foreground mb-2">Selected Vehicle:</p>
-                    <p className="font-semibold text-primary">
-                      {selectedCar.name} - {selectedCar.price}
-                    </p>
-                  </div>
-                )}
-
-                <form onSubmit={handleSubmit} className="space-y-6">
-                  <div>
-                    <label htmlFor="fullName" className="block text-sm font-medium mb-2">
-                      Full Name *
-                    </label>
-                    <Input
-                      id="fullName"
-                      name="fullName"
-                      value={formData.fullName}
-                      onChange={handleChange}
-                      placeholder="John Doe"
-                      className={errors.fullName ? "border-destructive" : ""}
-                    />
-                    {errors.fullName && <p className="text-sm text-destructive mt-1">{errors.fullName}</p>}
-                  </div>
-
-                  <div>
-                    <label htmlFor="email" className="block text-sm font-medium mb-2">
-                      Email Address *
-                    </label>
-                    <Input
-                      id="email"
-                      name="email"
-                      type="email"
-                      value={formData.email}
-                      onChange={handleChange}
-                      placeholder="john@example.com"
-                      className={errors.email ? "border-destructive" : ""}
-                    />
-                    {errors.email && <p className="text-sm text-destructive mt-1">{errors.email}</p>}
-                  </div>
-
-                  <div>
-                    <label htmlFor="phone" className="block text-sm font-medium mb-2">
-                      Phone Number *
-                    </label>
-                    <Input
-                      id="phone"
-                      name="phone"
-                      type="tel"
-                      value={formData.phone}
-                      onChange={handleChange}
-                      placeholder="+1 (555) 123-4567"
-                      className={errors.phone ? "border-destructive" : ""}
-                    />
-                    {errors.phone && <p className="text-sm text-destructive mt-1">{errors.phone}</p>}
-                  </div>
-
-                  {selectedCar && (
-                    <>
-                      <div>
-                        <label
-                          htmlFor="pickupLocation"
-                          className="block text-sm font-medium mb-2 flex items-center gap-2"
-                        >
-                          <MapPin className="w-4 h-4 text-primary" />
-                          Pickup Location *
-                        </label>
-                        <Input
-                          id="pickupLocation"
-                          name="pickupLocation"
-                          value={formData.pickupLocation || ""}
-                          onChange={handleChange}
-                          placeholder="Enter your pickup address"
-                          className={errors.pickupLocation ? "border-destructive" : ""}
-                        />
-                        {errors.pickupLocation && (
-                          <p className="text-sm text-destructive mt-1">{errors.pickupLocation}</p>
-                        )}
-                      </div>
-
-                      <div>
-                        <label htmlFor="destination" className="block text-sm font-medium mb-2 flex items-center gap-2">
-                          <MapPin className="w-4 h-4 text-primary" />
-                          Destination *
-                        </label>
-                        <Input
-                          id="destination"
-                          name="destination"
-                          value={formData.destination || ""}
-                          onChange={handleChange}
-                          placeholder="Enter your destination address"
-                          className={errors.destination ? "border-destructive" : ""}
-                        />
-                        {errors.destination && <p className="text-sm text-destructive mt-1">{errors.destination}</p>}
-                      </div>
-
-                      <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <label className="block text-sm font-medium mb-2 flex items-center gap-2">
-                            <CalendarIcon className="w-4 h-4 text-primary" />
-                            Ride Date *
-                          </label>
-                          <Popover>
-                            <PopoverTrigger asChild>
-                              <Button
-                                variant="outline"
-                                className={`w-full justify-start text-left ${!selectedDate ? "text-muted-foreground" : ""} ${errors.tripDate ? "border-destructive" : ""}`}
-                              >
-                                {selectedDate ? format(selectedDate, "PPP") : "Pick a date"}
-                              </Button>
-                            </PopoverTrigger>
-                            <PopoverContent className="w-auto p-0" align="start">
-                              <Calendar
-                                mode="single"
-                                selected={selectedDate}
-                                onSelect={handleDateSelect}
-                                disabled={(date) => date < new Date()}
-                                initialFocus
-                              />
-                            </PopoverContent>
-                          </Popover>
-                          {errors.tripDate && <p className="text-sm text-destructive mt-1">{errors.tripDate}</p>}
-                        </div>
-
-                        <div>
-                          <label htmlFor="tripTime" className="block text-sm font-medium mb-2 flex items-center gap-2">
-                            <CalendarIcon className="w-4 h-4 text-primary" />
-                            Pickup Time *
-                          </label>
-                          <Input
-                            id="tripTime"
-                            name="tripTime"
-                            type="time"
-                            value={formData.tripTime}
-                            onChange={handleTimeChange}
-                            className={`cursor-pointer ${errors.tripTime ? "border-destructive" : ""}`}
-                          />
-                          {errors.tripTime && <p className="text-sm text-destructive mt-1">{errors.tripTime}</p>}
-                        </div>
-                      </div>
-                    </>
-                  )}
-
-                  <div>
-                    <label htmlFor="message" className="block text-sm font-medium mb-2">
-                      {selectedCar ? "Special Requests" : "Message"} *
-                    </label>
-                    <Textarea
-                      id="message"
-                      name="message"
-                      value={formData.message}
-                      onChange={handleChange}
-                      placeholder={
-                        selectedCar
-                          ? "Any special requests or requirements for your ride..."
-                          : "Tell us how we can help..."
-                      }
-                      rows={5}
-                      className={errors.message ? "border-destructive" : ""}
-                    />
-                    {errors.message && <p className="text-sm text-destructive mt-1">{errors.message}</p>}
-                  </div>
-
-                  {submitStatus === "success" && (
-                    <div className="p-4 bg-primary/10 border border-primary/20 rounded-lg animate-in fade-in duration-300">
-                      <p className="text-sm text-foreground">
-                        {selectedCar
-                          ? "Your ride has been booked successfully! Our team will confirm shortly."
-                          : "Thank you! Your message has been sent successfully."}
-                      </p>
-                    </div>
-                  )}
-
-                  {submitStatus === "error" && (
-                    <div className="p-4 bg-destructive/10 border border-destructive/20 rounded-lg animate-in fade-in duration-300">
-                      <p className="text-sm text-destructive">
-                        Failed to process your request. Please check your details or try again later.
-                      </p>
-                    </div>
-                  )}
-
-                  <Button type="submit" size="lg" className="w-full" disabled={isSubmitting}>
-                    {isSubmitting ? "Processing..." : selectedCar ? "Confirm Ride Booking" : "Send Message"}
-                  </Button>
-                </form>
-              </CardContent>
-            </Card>
-          </div>
+          {/* Email */}
+          <Card className="animate-in fade-in slide-in-from-bottom duration-700 delay-300">
+            <CardContent className="p-6 flex items-start gap-4">
+              <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
+                <Mail className="w-6 h-6 text-primary" />
+              </div>
+              <div className="text-left">
+                <h3 className="font-semibold mb-1">Email Us</h3>
+                <p className="text-sm text-muted-foreground break-all">
+                  info@esssliomllc.com <br />
+                  sales@esssliomllc.com
+                </p>
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </div>
     </main>
