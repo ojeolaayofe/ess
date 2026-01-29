@@ -179,7 +179,7 @@ export function Contact() {
           </div>
 
           {/* Contact Form */}
-          {/* <div className="lg:col-span-2">
+          <div className="lg:col-span-2">
             <Card className="bg-card">
               <CardContent className="p-8">
                 <form onSubmit={handleSubmit} className="space-y-6">
