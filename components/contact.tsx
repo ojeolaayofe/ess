@@ -150,7 +150,7 @@ export function Contact() {
                   <div>
                     <h3 className="font-semibold mb-2">Call Us</h3>
                     <p className="text-sm text-muted-foreground leading-relaxed">
-                      +1 (310) 555-0199
+                     +1 (240) 498-5007
                       <br />
                       Mon-Sat: 9AM - 7PM
                     </p>
