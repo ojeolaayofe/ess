@@ -51,7 +51,7 @@ export function Navigation() {
               About
             </button>
             <button
-              onClick={() => handleNavigation("Book Ride")}
+              onClick={() => handleNavigation("cars")}
               className="text-foreground hover:text-primary transition-colors duration-300"
             >
               Book Ride
