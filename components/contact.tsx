@@ -66,6 +66,9 @@ export function Contact() {
       // 4. Get your PUBLIC_KEY, SERVICE_ID, and TEMPLATE_ID from EmailJS dashboard
       // 5. Replace the placeholders below with your actual values
 
+      // CONTACT FORM - General inquiries (separate from ride booking form)
+      // Create a separate EmailJS template for general contact messages
+      // Template variables: {{from_name}}, {{from_email}}, {{phone}}, {{message}}
       const response = await fetch("https://api.emailjs.com/api/v1.0/email/send", {
         method: "POST",
         headers: {
@@ -73,13 +76,14 @@ export function Contact() {
         },
         body: JSON.stringify({
           service_id: "YOUR_SERVICE_ID", // Replace with your EmailJS service ID
-          template_id: "YOUR_TEMPLATE_ID", // Replace with your EmailJS template ID
+          template_id: "YOUR_CONTACT_TEMPLATE_ID", // Use a DIFFERENT template for contact form
           user_id: "YOUR_PUBLIC_KEY", // Replace with your EmailJS public key
           template_params: {
             from_name: formData.fullName,
             from_email: formData.email,
             phone: formData.phone,
             message: formData.message,
+            form_type: "General Contact Inquiry", // Identifies the form type
             to_email: "your-gmail@gmail.com", // Replace with your Gmail address
           },
         }),

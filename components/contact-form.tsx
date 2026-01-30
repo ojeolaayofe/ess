@@ -103,15 +103,18 @@ export default function ContactForm() {
     setSubmitStatus("idle")
 
     try {
+      // RIDE BOOKING FORM - Vehicle bookings (separate from general contact form)
+      // Create a separate EmailJS template for ride bookings
+      // Template variables: {{from_name}}, {{from_email}}, {{phone}}, {{selected_vehicle}}, {{trip_date}}, {{trip_time}}, {{pickup_location}}, {{destination}}, {{message}}
       const response = await fetch("https://api.emailjs.com/api/v1.0/email/send", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          service_id: "YOUR_SERVICE_ID",
-          template_id: "YOUR_TEMPLATE_ID",
-          user_id: "YOUR_PUBLIC_KEY",
+          service_id: "YOUR_SERVICE_ID", // Replace with your EmailJS service ID
+          template_id: "YOUR_BOOKING_TEMPLATE_ID", // Use a DIFFERENT template for ride bookings
+          user_id: "YOUR_PUBLIC_KEY", // Replace with your EmailJS public key
           template_params: {
             from_name: formData.fullName,
             from_email: formData.email,
@@ -122,7 +125,8 @@ export default function ContactForm() {
             pickup_location: formData.pickupLocation || "Not specified",
             destination: formData.destination || "Not specified",
             message: formData.message,
-            to_email: "your-gmail@gmail.com",
+            form_type: "Ride Booking Request", // Identifies the form type
+            to_email: "your-gmail@gmail.com", // Replace with your Gmail address
           },
         }),
       })
