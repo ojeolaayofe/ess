@@ -7,7 +7,15 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent } from "@/components/ui/card"
-import { MapPin, Phone, Mail } from "lucide-react"
+import { MapPin, Phone, Mail, CheckCircle } from "lucide-react"
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog"
 
 export function Contact() {
   const [formData, setFormData] = useState({
@@ -19,6 +27,7 @@ export function Contact() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitStatus, setSubmitStatus] = useState<"idle" | "success" | "error">("idle")
   const [errors, setErrors] = useState<Record<string, string>>({})
+  const [showSuccessModal, setShowSuccessModal] = useState(false)
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {}
@@ -76,7 +85,7 @@ export function Contact() {
         },
         body: JSON.stringify({
           service_id: "service_5hxdfte", // Replace with your EmailJS service ID
-          template_id: "template_fmlcjky", // Use a DIFFERENT template for contact form
+          template_id: "template_fmlcjky", // template_fmlcjky Use a DIFFERENT template for contact form
           user_id: "SBJYWjJ6UyrzqVxoU", // Replace with your EmailJS public key
           template_params: {
             from_name: formData.fullName,
@@ -91,14 +100,12 @@ export function Contact() {
 
       if (response.ok) {
         setSubmitStatus("success")
+        setShowSuccessModal(true)
         setFormData({ fullName: "", email: "", phone: "", message: "" })
       } else {
-        const errorText = await response.text()
-        console.log("[v0] EmailJS Error Response:", response.status, errorText)
         setSubmitStatus("error")
       }
     } catch (error) {
-      console.log("[v0] EmailJS Catch Error:", error)
       setSubmitStatus("error")
     } finally {
       setIsSubmitting(false)
@@ -252,12 +259,6 @@ export function Contact() {
                     {errors.message && <p className="text-sm text-destructive mt-1">{errors.message}</p>}
                   </div>
 
-                  {submitStatus === "success" && (
-                    <div className="p-4 bg-primary/10 border border-primary/20 rounded-lg">
-                      <p className="text-sm text-foreground">Thank you! Your message has been sent successfully.</p>
-                    </div>
-                  )}
-
                   {submitStatus === "error" && (
                     <div className="p-4 bg-destructive/10 border border-destructive/20 rounded-lg">
                       <p className="text-sm text-destructive">
@@ -275,6 +276,26 @@ export function Contact() {
           </div>
         </div>
       </div> */}
+
+      {/* Success Modal */}
+      <Dialog open={showSuccessModal} onOpenChange={setShowSuccessModal}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader className="text-center sm:text-center">
+            <div className="mx-auto mb-4 w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center">
+              <CheckCircle className="w-8 h-8 text-primary" />
+            </div>
+            <DialogTitle className="text-2xl">Message Sent!</DialogTitle>
+            <DialogDescription className="text-base">
+              Thank you for reaching out. Your message has been sent successfully. Our team will get back to you shortly.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="sm:justify-center">
+            <Button onClick={() => setShowSuccessModal(false)} className="w-full sm:w-auto">
+              Close
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </section>
   )
 }
