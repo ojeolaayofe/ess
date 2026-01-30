@@ -75,16 +75,16 @@ export function Contact() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          service_id: "YOUR_SERVICE_ID", // Replace with your EmailJS service ID
-          template_id: "YOUR_CONTACT_TEMPLATE_ID", // Use a DIFFERENT template for contact form
-          user_id: "YOUR_PUBLIC_KEY", // Replace with your EmailJS public key
+          service_id: "service_5hxdfte", // Replace with your EmailJS service ID
+          template_id: "template_fmlcjky", // Use a DIFFERENT template for contact form
+          user_id: "SBJYWjJ6UyrzqVxoU", // Replace with your EmailJS public key
           template_params: {
             from_name: formData.fullName,
             from_email: formData.email,
             phone: formData.phone,
             message: formData.message,
             form_type: "General Contact Inquiry", // Identifies the form type
-            to_email: "your-gmail@gmail.com", // Replace with your Gmail address
+            to_email: "ojeolaponle@gmail.com", // Replace with your Gmail address
           },
         }),
       })
@@ -93,10 +93,12 @@ export function Contact() {
         setSubmitStatus("success")
         setFormData({ fullName: "", email: "", phone: "", message: "" })
       } else {
+        const errorText = await response.text()
+        console.log("[v0] EmailJS Error Response:", response.status, errorText)
         setSubmitStatus("error")
       }
     } catch (error) {
-      console.error("Error sending email:", error)
+      console.log("[v0] EmailJS Catch Error:", error)
       setSubmitStatus("error")
     } finally {
       setIsSubmitting(false)
