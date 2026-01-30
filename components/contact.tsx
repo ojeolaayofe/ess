@@ -78,24 +78,28 @@ export function Contact() {
       // CONTACT FORM - General inquiries (separate from ride booking form)
       // Create a separate EmailJS template for general contact messages
       // Template variables: {{from_name}}, {{from_email}}, {{phone}}, {{message}}
+      const requestBody = {
+        service_id: "service_5hxdfte",
+        template_id: "template_fmlcjky",
+        user_id: "SBJYWjJ6UyrzqVxoU",
+        template_params: {
+          from_name: formData.fullName,
+          from_email: formData.email,
+          phone: formData.phone,
+          message: formData.message,
+          form_type: "General Contact Inquiry",
+          to_email: "ojeolaponle@gmail.com",
+        },
+      }
+      
+      console.log("[v0] Contact Form - Sending to EmailJS:", JSON.stringify(requestBody, null, 2))
+      
       const response = await fetch("https://api.emailjs.com/api/v1.0/email/send", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          service_id: "service_5hxdfte", // Replace with your EmailJS service ID
-          template_id: "template_fmlcjky", // template_fmlcjky Use a DIFFERENT template for contact form
-          user_id: "SBJYWjJ6UyrzqVxoU", // Replace with your EmailJS public key
-          template_params: {
-            from_name: formData.fullName,
-            from_email: formData.email,
-            phone: formData.phone,
-            message: formData.message,
-            form_type: "General Contact Inquiry", // Identifies the form type
-            to_email: "ojeolaponle@gmail.com", // Replace with your Gmail address
-          },
-        }),
+        body: JSON.stringify(requestBody),
       })
 
       if (response.ok) {
