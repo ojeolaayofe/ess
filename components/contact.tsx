@@ -85,7 +85,7 @@ const response = await fetch("https://api.emailjs.com/api/v1.0/email/send", {
         },
         body: JSON.stringify({
           service_id: "service_5hxdfte",
-          template_id: "template_fmlcjky",
+          template_id: "template_q4r03tp",
           user_id: "SBJYWjJ6UyrzqVxoU",
           template_params: {
             from_name: formData.fullName,
