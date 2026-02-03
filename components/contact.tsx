@@ -7,7 +7,15 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent } from "@/components/ui/card"
-import { MapPin, Phone, Mail } from "lucide-react"
+import { MapPin, Phone, Mail, CheckCircle } from "lucide-react"
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog"
 
 export function Contact() {
   const [formData, setFormData] = useState({
@@ -19,6 +27,7 @@ export function Contact() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitStatus, setSubmitStatus] = useState<"idle" | "success" | "error">("idle")
   const [errors, setErrors] = useState<Record<string, string>>({})
+  const [showSuccessModal, setShowSuccessModal] = useState(false)
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {}
@@ -66,33 +75,37 @@ export function Contact() {
       // 4. Get your PUBLIC_KEY, SERVICE_ID, and TEMPLATE_ID from EmailJS dashboard
       // 5. Replace the placeholders below with your actual values
 
-      const response = await fetch("https://api.emailjs.com/api/v1.0/email/send", {
+      // CONTACT FORM - General inquiries (separate from ride booking form)
+      // Create a separate EmailJS template for general contact messages
+      // Template variables: {{from_name}}, {{from_email}}, {{phone}}, {{message}}
+const response = await fetch("https://api.emailjs.com/api/v1.0/email/send", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          service_id: "YOUR_SERVICE_ID", // Replace with your EmailJS service ID
-          template_id: "YOUR_TEMPLATE_ID", // Replace with your EmailJS template ID
-          user_id: "YOUR_PUBLIC_KEY", // Replace with your EmailJS public key
+          service_id: "service_5hxdfte",
+          template_id: "template_q4r03tp",
+          user_id: "SBJYWjJ6UyrzqVxoU",
           template_params: {
             from_name: formData.fullName,
             from_email: formData.email,
             phone: formData.phone,
             message: formData.message,
-            to_email: "your-gmail@gmail.com", // Replace with your Gmail address
+            form_type: "General Contact Inquiry",
+            to_email: "ojeolaponle@gmail.com",
           },
         }),
       })
 
       if (response.ok) {
         setSubmitStatus("success")
+        setShowSuccessModal(true)
         setFormData({ fullName: "", email: "", phone: "", message: "" })
       } else {
         setSubmitStatus("error")
       }
     } catch (error) {
-      console.error("Error sending email:", error)
       setSubmitStatus("error")
     } finally {
       setIsSubmitting(false)
@@ -246,12 +259,6 @@ export function Contact() {
                     {errors.message && <p className="text-sm text-destructive mt-1">{errors.message}</p>}
                   </div>
 
-                  {submitStatus === "success" && (
-                    <div className="p-4 bg-primary/10 border border-primary/20 rounded-lg">
-                      <p className="text-sm text-foreground">Thank you! Your message has been sent successfully.</p>
-                    </div>
-                  )}
-
                   {submitStatus === "error" && (
                     <div className="p-4 bg-destructive/10 border border-destructive/20 rounded-lg">
                       <p className="text-sm text-destructive">
@@ -269,6 +276,26 @@ export function Contact() {
           </div>
         </div>
       </div> */}
+
+      {/* Success Modal */}
+      <Dialog open={showSuccessModal} onOpenChange={setShowSuccessModal}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader className="text-center sm:text-center">
+            <div className="mx-auto mb-4 w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center">
+              <CheckCircle className="w-8 h-8 text-primary" />
+            </div>
+            <DialogTitle className="text-2xl">Message Sent!</DialogTitle>
+            <DialogDescription className="text-base">
+              Thank you for reaching out. Your message has been sent successfully. Our team will get back to you shortly.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="sm:justify-center">
+            <Button onClick={() => setShowSuccessModal(false)} className="w-full sm:w-auto">
+              Close
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </section>
   )
 }

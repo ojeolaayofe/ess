@@ -6,7 +6,15 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent } from "@/components/ui/card"
-import { CalendarIcon, MapPin, Phone, Mail } from "lucide-react"
+import { CalendarIcon, MapPin, Phone, Mail, CheckCircle } from "lucide-react"
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Calendar } from "@/components/ui/calendar"
 import { format } from "date-fns"
@@ -28,6 +36,7 @@ export default function ContactForm() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitStatus, setSubmitStatus] = useState<"idle" | "success" | "error">("idle")
   const [errors, setErrors] = useState<Record<string, string>>({})
+  const [showSuccessModal, setShowSuccessModal] = useState(false)
 
   useEffect(() => {
     if (typeof window === "undefined") return
@@ -103,15 +112,18 @@ export default function ContactForm() {
     setSubmitStatus("idle")
 
     try {
+      // RIDE BOOKING FORM - Vehicle bookings (separate from general contact form)
+      // Create a separate EmailJS template for ride bookings
+      // Template variables: {{from_name}}, {{from_email}}, {{phone}}, {{selected_vehicle}}, {{trip_date}}, {{trip_time}}, {{pickup_location}}, {{destination}}, {{message}}
       const response = await fetch("https://api.emailjs.com/api/v1.0/email/send", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          service_id: "YOUR_SERVICE_ID",
-          template_id: "YOUR_TEMPLATE_ID",
-          user_id: "YOUR_PUBLIC_KEY",
+          service_id: "service_5hxdfte", // Replace with your EmailJS service ID
+          template_id: "template_fwn7lz8", // Use a DIFFERENT template for ride bookings
+          user_id: "SBJYWjJ6UyrzqVxoU", // Replace with your EmailJS public key
           template_params: {
             from_name: formData.fullName,
             from_email: formData.email,
@@ -122,13 +134,15 @@ export default function ContactForm() {
             pickup_location: formData.pickupLocation || "Not specified",
             destination: formData.destination || "Not specified",
             message: formData.message,
-            to_email: "your-gmail@gmail.com",
+            form_type: "Ride Booking Request", // Identifies the form type
+            to_email: "ojeolaponle@gmail.com", // Replace with your Gmail address
           },
         }),
       })
 
       if (response.ok) {
         setSubmitStatus("success")
+        setShowSuccessModal(true)
         setFormData({
           fullName: "",
           email: "",
@@ -144,7 +158,6 @@ export default function ContactForm() {
         setSubmitStatus("error")
       }
     } catch (error) {
-      console.error("Error sending email:", error)
       setSubmitStatus("error")
     } finally {
       setIsSubmitting(false)
@@ -429,16 +442,6 @@ export default function ContactForm() {
                     {errors.message && <p className="text-sm text-destructive mt-1">{errors.message}</p>}
                   </div>
 
-                  {submitStatus === "success" && (
-                    <div className="p-4 bg-primary/10 border border-primary/20 rounded-lg animate-in fade-in duration-300">
-                      <p className="text-sm text-foreground">
-                        {selectedCar
-                          ? "Your ride has been booked successfully! Our team will confirm shortly."
-                          : "Thank you! Your message has been sent successfully."}
-                      </p>
-                    </div>
-                  )}
-
                   {submitStatus === "error" && (
                     <div className="p-4 bg-destructive/10 border border-destructive/20 rounded-lg animate-in fade-in duration-300">
                       <p className="text-sm text-destructive">
@@ -456,6 +459,30 @@ export default function ContactForm() {
           </div>
         </div>
       </div>
+
+      {/* Success Modal */}
+      <Dialog open={showSuccessModal} onOpenChange={setShowSuccessModal}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader className="text-center sm:text-center">
+            <div className="mx-auto mb-4 w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center">
+              <CheckCircle className="w-8 h-8 text-primary" />
+            </div>
+            <DialogTitle className="text-2xl">
+              {selectedCar ? "Ride Booked!" : "Message Sent!"}
+            </DialogTitle>
+            <DialogDescription className="text-base">
+              {selectedCar
+                ? "Your ride has been booked successfully! Our team will confirm your booking and reach out to you shortly."
+                : "Thank you for reaching out. Your message has been sent successfully. Our team will get back to you shortly."}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="sm:justify-center">
+            <Button onClick={() => setShowSuccessModal(false)} className="w-full sm:w-auto">
+              Close
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </main>
   )
 }
