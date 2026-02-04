@@ -32,9 +32,9 @@ export function About() {
   return (
     <section id="about" className="py-24 bg-card overflow-hidden">
       <div className="container mx-auto px-4 lg:px-8">
-        <div className="grid lg:grid-cols-2 gap-12 items-center">
-          {/* Left Content */}
-          <div className="animate-in fade-in slide-in-from-left duration-700">
+        <div>
+          {/* Content */}
+          <div className="animate-in fade-in slide-in-from-left duration-700 max-w-3xl">
             <h2 className="text-4xl md:text-5xl font-bold mb-6 text-balance">
               About <span className="text-primary">ESSS LIMO LLC</span>
             </h2>
@@ -84,33 +84,6 @@ export function About() {
                   </div>
                 )
               })}
-            </div>
-          </div>
-
-          {/* Right Images - Vehicles Side by Side */}
-          <div className="grid grid-cols-2 gap-4 animate-in fade-in slide-in-from-right duration-700">
-            {/* Chevrolet Suburban */}
-            <div className="relative h-[240px] rounded-lg overflow-hidden group">
-              <img
-                src="/chevrolet-suburban-black-exterior.jpg"
-                alt="Chevrolet Suburban"
-                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-4">
-                <h4 className="text-white font-semibold text-lg">Chevrolet Suburban</h4>
-              </div>
-            </div>
-
-            {/* Chevrolet Equinox */}
-            <div className="relative h-[240px] rounded-lg overflow-hidden group">
-              <img
-                src="/chevrolet-equinox-exterior.jpg"
-                alt="Chevrolet Equinox"
-                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-4">
-                <h4 className="text-white font-semibold text-lg">Chevrolet Equinox</h4>
-              </div>
             </div>
           </div>
         </div>
