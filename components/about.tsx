@@ -34,7 +34,7 @@ export function About() {
       <div className="container mx-auto px-4 lg:px-8">
         <div>
           {/* Content */}
-          <div className="animate-in fade-in slide-in-from-left duration-700 max-w-3xl">
+          <div className="animate-in fade-in slide-in-from-left duration-700">
             <h2 className="text-4xl md:text-5xl font-bold mb-6 text-balance">
               About <span className="text-primary">ESSS LIMO LLC</span>
             </h2>
