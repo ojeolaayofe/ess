@@ -40,6 +40,34 @@ export function Cars() {
         "Backup Camera with Sensors",
       ],
     },
+    {
+      id: 2,
+      name: "Chevrolet Equinox",
+      year: 2024,
+      price: "$150/hour",
+      image: "/chevrolet-equinox-exterior.jpg",
+      exteriorImage: "/chevrolet-equinox-exterior.jpg",
+      interiorImage: "/chevrolet-equinox-interior.jpg",
+      description: "Stylish luxury SUV combining elegance with performance, perfect for discerning travelers who value both comfort and sophistication",
+      category: "Luxury SUV",
+      specs: {
+        engine: "3.6L V6",
+        horsepower: "310 hp",
+        seats: "Seats up to 5 passengers",
+        transmission: "Automatic",
+        fuelEconomy: "22 MPG City / 29 MPG Highway",
+      },
+      features: [
+        "Sunroof",
+        "Premium Leather Interior",
+        "Adaptive Safety Package",
+        "Heated Seats",
+        "Bose Premium Audio System",
+        "Power Liftgate",
+        "Dual-Zone Climate Control",
+        "Integrated Backup Camera",
+      ],
+    },
   ]
 
   const handleViewDetails = (car) => {

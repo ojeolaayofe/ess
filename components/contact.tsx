@@ -133,144 +133,41 @@ const response = await fetch("https://api.emailjs.com/api/v1.0/email/send", {
           </p>
         </div>
 
-        <div className="grid lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
-          {/* Contact Information */}
-          <div className="space-y-6">
-            <Card className="bg-card">
-              <CardContent className="p-6">
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <MapPin className="w-6 h-6 text-primary" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold mb-2">Visit Us</h3>
-                    <p className="text-sm text-muted-foreground leading-relaxed">
-                      123 Luxury Drive
-                      <br />
-                      Beverly Hills, CA 90210
-                    </p>
-                  </div>
+        <div className="grid lg:grid-cols-2 gap-8 max-w-4xl mx-auto">
+          {/* Call Us Section */}
+          <div className="animate-in fade-in slide-in-from-left duration-700">
+            <Card className="bg-card hover:shadow-xl transition-all duration-500 h-full">
+              <CardContent className="p-8 flex flex-col items-center text-center">
+                <div className="w-16 h-16 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0 mb-6">
+                  <Phone className="w-8 h-8 text-primary" />
                 </div>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-card">
-              <CardContent className="p-6">
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <Phone className="w-6 h-6 text-primary" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold mb-2">Call Us</h3>
-                    <p className="text-sm text-muted-foreground leading-relaxed">
-                     +1 (240) 498-5007
-                      <br />
-                      Mon-Sat: 9AM - 7PM
-                    </p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-card">
-              <CardContent className="p-6">
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <Mail className="w-6 h-6 text-primary" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold mb-2">Email Us</h3>
-                    <p className="text-sm text-muted-foreground leading-relaxed break-all">
-                      info@elitemotors.com
-                      <br />
-                      sales@elitemotors.com
-                    </p>
-                  </div>
+                <h3 className="text-2xl font-semibold mb-4">Call Us</h3>
+                <p className="text-muted-foreground mb-6 leading-relaxed">
+                  Ready to book your luxury ride? Give us a call and our dedicated team will be happy to assist you.
+                </p>
+                <div className="bg-muted p-4 rounded-lg w-full mb-6">
+                  <p className="text-lg font-bold text-primary">+1 (240) 791-6796</p>
+                  <p className="text-sm text-muted-foreground mt-2">Mon-Sat: 9AM - 7PM</p>
                 </div>
               </CardContent>
             </Card>
           </div>
 
-          {/* Contact Form */}
-          <div className="lg:col-span-2">
-            <Card className="bg-card">
-              <CardContent className="p-8">
-                <form onSubmit={handleSubmit} className="space-y-6">
-                  <div>
-                    <label htmlFor="fullName" className="block text-sm font-medium mb-2">
-                      Full Name *
-                    </label>
-                    <Input
-                      id="fullName"
-                      name="fullName"
-                      value={formData.fullName}
-                      onChange={handleChange}
-                      placeholder="John Doe"
-                      className={errors.fullName ? "border-destructive" : ""}
-                    />
-                    {errors.fullName && <p className="text-sm text-destructive mt-1">{errors.fullName}</p>}
-                  </div>
-
-                  <div>
-                    <label htmlFor="email" className="block text-sm font-medium mb-2">
-                      Email Address *
-                    </label>
-                    <Input
-                      id="email"
-                      name="email"
-                      type="email"
-                      value={formData.email}
-                      onChange={handleChange}
-                      placeholder="john@example.com"
-                      className={errors.email ? "border-destructive" : ""}
-                    />
-                    {errors.email && <p className="text-sm text-destructive mt-1">{errors.email}</p>}
-                  </div>
-
-                  <div>
-                    <label htmlFor="phone" className="block text-sm font-medium mb-2">
-                      Phone Number *
-                    </label>
-                    <Input
-                      id="phone"
-                      name="phone"
-                      type="tel"
-                      value={formData.phone}
-                      onChange={handleChange}
-                      placeholder="+1 (555) 123-4567"
-                      className={errors.phone ? "border-destructive" : ""}
-                    />
-                    {errors.phone && <p className="text-sm text-destructive mt-1">{errors.phone}</p>}
-                  </div>
-
-                  <div>
-                    <label htmlFor="message" className="block text-sm font-medium mb-2">
-                      Message *
-                    </label>
-                    <Textarea
-                      id="message"
-                      name="message"
-                      value={formData.message}
-                      onChange={handleChange}
-                      placeholder="Tell us about your automotive needs..."
-                      rows={5}
-                      className={errors.message ? "border-destructive" : ""}
-                    />
-                    {errors.message && <p className="text-sm text-destructive mt-1">{errors.message}</p>}
-                  </div>
-
-                  {submitStatus === "error" && (
-                    <div className="p-4 bg-destructive/10 border border-destructive/20 rounded-lg">
-                      <p className="text-sm text-destructive">
-                        Failed to send message. Please check your EmailJS configuration or try again later.
-                      </p>
-                    </div>
-                  )}
-
-                  <Button type="submit" size="lg" className="w-full" disabled={isSubmitting}>
-                    {isSubmitting ? "Sending..." : "Send Message"}
-                  </Button>
-                </form>
+          {/* Email Us Section */}
+          <div className="animate-in fade-in slide-in-from-right duration-700">
+            <Card className="bg-card hover:shadow-xl transition-all duration-500 h-full">
+              <CardContent className="p-8 flex flex-col items-center text-center">
+                <div className="w-16 h-16 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0 mb-6">
+                  <Mail className="w-8 h-8 text-primary" />
+                </div>
+                <h3 className="text-2xl font-semibold mb-4">Email Us</h3>
+                <p className="text-muted-foreground mb-6 leading-relaxed">
+                  Prefer email? Drop us a message and we'll respond promptly with all the information you need.
+                </p>
+                <div className="bg-muted p-4 rounded-lg w-full mb-6">
+                  <p className="text-base font-bold text-primary break-all mb-2">info@esssliomllc.com</p>
+                  <p className="text-base font-bold text-primary break-all">sales@esssliomllc.com</p>
+                </div>
               </CardContent>
             </Card>
           </div>
