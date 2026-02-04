@@ -211,9 +211,9 @@ export default function ContactForm() {
           </p>
         </div>
 
-        <div className="grid lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
+        <div className={`grid gap-8 max-w-6xl mx-auto ${selectedCar ? 'lg:grid-cols-3' : 'lg:grid-cols-2'}`}>
           {/* Contact Information */}
-          <div className="space-y-6">
+          <div className={`space-y-6 ${selectedCar ? '' : 'lg:col-span-full'}`}>
             <div className="animate-in fade-in slide-in-from-left duration-700 delay-100">
               <Card className="bg-card hover:shadow-lg transition-all duration-500">
                 <CardContent className="p-6">
@@ -237,14 +237,14 @@ export default function ContactForm() {
             <div className="animate-in fade-in slide-in-from-left duration-700 delay-200">
               <Card className="bg-card hover:shadow-lg transition-all duration-500">
                 <CardContent className="p-6">
-                  <div className="flex items-start gap-4">
+                    <div className="flex items-start gap-4">
                     <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
                       <Phone className="w-6 h-6 text-primary" />
                     </div>
                     <div>
                       <h3 className="font-semibold mb-2">Call Us</h3>
                       <p className="text-sm text-muted-foreground leading-relaxed">
-                        +1 (310) 555-0199
+                        +1 (240) 791-6796
                         <br />
                         Mon-Sat: 9AM - 7PM
                       </p>
@@ -275,7 +275,8 @@ export default function ContactForm() {
             </div>
           </div>
 
-          {/* Contact Form */}
+          {/* Contact Form - Only show when booking a car */}
+          {selectedCar && (
           <div className="lg:col-span-2 animate-in fade-in slide-in-from-right duration-700 delay-100">
             <Card className="bg-card hover:shadow-xl transition-all duration-500">
               <CardContent className="p-8">
@@ -457,6 +458,7 @@ export default function ContactForm() {
               </CardContent>
             </Card>
           </div>
+          )}
         </div>
       </div>
 

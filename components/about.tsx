@@ -32,8 +32,8 @@ export function About() {
   return (
     <section id="about" className="py-24 bg-card overflow-hidden">
       <div className="container mx-auto px-4 lg:px-8">
-        <div className="grid lg:grid-cols-2 gap-12 items-center">
-          {/* Left Content */}
+        <div>
+          {/* Content */}
           <div className="animate-in fade-in slide-in-from-left duration-700">
             <h2 className="text-4xl md:text-5xl font-bold mb-6 text-balance">
               About <span className="text-primary">ESSS LIMO LLC</span>
@@ -85,16 +85,6 @@ export function About() {
                 )
               })}
             </div>
-          </div>
-
-          {/* Right Image */}
-          <div className="relative h-[500px] rounded-lg overflow-hidden animate-in fade-in slide-in-from-right duration-700">
-            <img
-              src="/esss-limo-luxury-showroom.jpg"
-              alt="ESSS LIMO LLC showroom"
-              className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-background/60 to-transparent" />
           </div>
         </div>
       </div>
