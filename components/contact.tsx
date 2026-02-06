@@ -88,12 +88,13 @@ const response = await fetch("https://api.emailjs.com/api/v1.0/email/send", {
           template_id: "template_q4r03tp",
           user_id: "SBJYWjJ6UyrzqVxoU",
           template_params: {
-            from_name: formData.fullName,
+            from_name: "ESS LIMO LLC",
+            customer_name: formData.fullName,
             from_email: formData.email,
             phone: formData.phone,
             message: formData.message,
             form_type: "General Contact Inquiry",
-            to_email: "ojeolaponle@gmail.com",
+            to_email: "esssllimo2025@gmail.com",
           },
         }),
       })

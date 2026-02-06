@@ -125,7 +125,8 @@ export default function ContactForm() {
           template_id: "template_fwn7lz8", // Use a DIFFERENT template for ride bookings
           user_id: "SBJYWjJ6UyrzqVxoU", // Replace with your EmailJS public key
           template_params: {
-            from_name: formData.fullName,
+            from_name: "ESS LIMO LLC",
+            customer_name: formData.fullName,
             from_email: formData.email,
             phone: formData.phone,
             selected_vehicle: formData.selectedVehicle,
@@ -135,7 +136,7 @@ export default function ContactForm() {
             destination: formData.destination || "Not specified",
             message: formData.message,
             form_type: "Ride Booking Request", // Identifies the form type
-            to_email: "ojeolaponle@gmail.com", // Replace with your Gmail address
+            to_email: "esssllimo2025@gmail.com", // Replace with your Gmail address
           },
         }),
       })
